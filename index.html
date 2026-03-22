@@ -118,9 +118,17 @@ section.vis{opacity:1;transform:translateY(0)}
 .pef{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
 .pfoot{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid rgba(0,0,0,.06)}
 .pprice{font-weight:900;font-size:20px}
-.padd{background:var(--dark);color:white;border:none;padding:10px 20px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:none;opacity:0;transform:translateY(4px);transition:all .2s}
+.padd{background:var(--dark);color:white;border:none;padding:10px 20px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:none;opacity:0;transform:translateY(4px);transition:all .2s;position:relative;overflow:hidden}
 .pcard:hover .padd{opacity:1;transform:translateY(0)}
 .padd:hover{background:var(--gold)}
+.padd.loading{background:var(--gold);pointer-events:none}
+.padd.loading::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer .7s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+/* Partícula voladora */
+.fly-mate{position:fixed;font-size:28px;pointer-events:none;z-index:99999;transition:none;will-change:transform,opacity}
+@keyframes flyToCart{0%{transform:scale(1) rotate(0deg);opacity:1}60%{transform:scale(1.4) rotate(-20deg);opacity:1}100%{transform:scale(0.3) rotate(15deg);opacity:0}}
+.pcard.pop{animation:cardPop .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cardPop{0%{transform:translateY(-8px) scale(1)}50%{transform:translateY(-12px) scale(1.03)}100%{transform:translateY(-8px) scale(1)}}
 
 /* SPLIT */
 .split{display:grid;grid-template-columns:1fr 1fr;min-height:600px;background:var(--off)}
@@ -758,9 +766,38 @@ function toggleCart(e){e&&e.preventDefault();document.getElementById('cdrawer').
 async function addCart(id,name,price,color){
   const ex=cart.find(i=>i.id===id);
   if(ex)ex.qty++;else cart.push({id,name,price,color,qty:1});
-  renderCart();toast(name+' agregado 🌿','ok');
+
+  // Animación: partícula vuela del botón al carrito
   const btn=document.querySelector(`[data-id="${id}"] .padd`);
-  if(btn){btn.textContent='✓ Agregado';btn.style.background='#2a7a2a';setTimeout(()=>{btn.textContent='+ Agregar';btn.style.background='';},1500);}
+  const cartBtn=document.querySelector('.cart-btn')||document.querySelector('[onclick*="toggleCart"]');
+  if(btn){
+    btn.classList.add('loading');
+    btn.textContent='🧉 Agregando...';
+    const bRect=btn.getBoundingClientRect();
+    const fly=document.createElement('div');
+    fly.className='fly-mate';
+    fly.textContent='🧉';
+    fly.style.cssText=`left:${bRect.left+bRect.width/2-14}px;top:${bRect.top+bRect.height/2-14}px`;
+    document.body.appendChild(fly);
+    const dest=cartBtn?cartBtn.getBoundingClientRect():{left:window.innerWidth-60,top:20,width:40,height:40};
+    const dx=dest.left+dest.width/2-14-(bRect.left+bRect.width/2-14);
+    const dy=dest.top+dest.height/2-14-(bRect.top+bRect.height/2-14);
+    fly.animate([
+      {transform:'translate(0,0) scale(1) rotate(0deg)',opacity:1},
+      {transform:`translate(${dx/2}px,${dy/2-40}px) scale(1.3) rotate(-20deg)`,opacity:1,offset:.5},
+      {transform:`translate(${dx}px,${dy}px) scale(0.2) rotate(15deg)`,opacity:0}
+    ],{duration:600,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>fly.remove();
+    const card=document.querySelector(`[data-id="${id}"]`);
+    if(card){card.classList.add('pop');card.addEventListener('animationend',()=>card.classList.remove('pop'),{once:true});}
+    setTimeout(()=>{
+      btn.classList.remove('loading');
+      btn.textContent='✓ Agregado';
+      btn.style.background='#2a7a2a';
+      setTimeout(()=>{btn.textContent='+ Agregar';btn.style.background='';},1200);
+    },600);
+  }
+
+  renderCart();toast(name+' agregado 🌿','ok');
   if(user)await _sb.from('cart_items').upsert({user_id:user.id,product_id:id,quantity:ex?ex.qty:1},{onConflict:'user_id,product_id'});
 }
 async function rmCart(id){cart=cart.filter(i=>i.id!==id);renderCart();if(user)await _sb.from('cart_items').delete().eq('user_id',user.id).eq('product_id',id);}

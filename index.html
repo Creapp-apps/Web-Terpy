@@ -693,7 +693,24 @@ document.querySelectorAll('section').forEach(s=>ro.observe(s));
 function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000);}
 
 // ─── AUTH ───
-function openAuth(e){e&&e.preventDefault();if(user){_sb.auth.signOut();return;}document.getElementById('auth-modal').classList.add('on');}
+function openAuth(e){
+  e&&e.preventDefault();
+  if(user){
+    // Mostrar dropdown de cuenta
+    let dd=document.getElementById('account-dd');
+    if(dd){dd.remove();return;}
+    dd=document.createElement('div');
+    dd.id='account-dd';
+    dd.style.cssText='position:fixed;top:64px;right:160px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);padding:20px;min-width:220px;z-index:9999;border:1px solid rgba(0,0,0,.08)';
+    dd.innerHTML=`<div style="font-size:12px;color:#888;margin-bottom:4px">Sesión iniciada como</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:16px;word-break:break-all">${user.email}</div>
+      <button onclick="document.getElementById('account-dd')?.remove();_sb.auth.signOut();" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #e8e8e8;background:white;font-size:13px;font-weight:700;cursor:pointer">Cerrar sesión</button>`;
+    document.body.appendChild(dd);
+    setTimeout(()=>document.addEventListener('click',function h(ev){if(!dd.contains(ev.target)&&ev.target!==document.getElementById('btn-auth')){dd.remove();document.removeEventListener('click',h);}},{once:false}),100);
+    return;
+  }
+  document.getElementById('auth-modal').classList.add('on');
+}
 function closeAuth(){document.getElementById('auth-modal').classList.remove('on');}
 function toggleMode(e){
   e&&e.preventDefault();

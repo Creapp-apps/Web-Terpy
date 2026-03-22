@@ -263,6 +263,17 @@ footer{background:var(--dark);color:white;padding:64px 48px 32px}
 /* TOAST */
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:white;padding:12px 22px;border-radius:100px;font-size:13px;font-weight:600;z-index:99998;transition:transform .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;pointer-events:none}
 
+/* CONFIRMACIÓN DE PAGO */
+.confirm-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
+.confirm-modal{background:white;border-radius:28px;width:100%;max-width:480px;padding:48px 40px;text-align:center;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.confirm-icon{font-size:64px;margin-bottom:20px}
+.confirm-title{font-size:26px;font-weight:800;margin-bottom:8px}
+.confirm-sub{font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.5}
+.confirm-order{background:#f5f5f5;border-radius:14px;padding:16px 20px;margin-bottom:28px;font-size:13px;color:var(--muted)}
+.confirm-order strong{display:block;font-size:18px;font-weight:800;color:var(--dark);margin-top:4px}
+.confirm-btn{display:inline-block;padding:14px 32px;border-radius:100px;font-weight:700;font-size:15px;cursor:pointer;border:none;width:100%}
+
 /* CHECKOUT */
 .chk-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10001;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(6px);overflow-y:auto}
 .chk-bg.on{opacity:1;pointer-events:all}
@@ -349,6 +360,19 @@ footer{background:var(--dark);color:white;padding:64px 48px 32px}
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- CONFIRMACIÓN DE PAGO -->
+<div class="confirm-bg" id="confirm-bg" style="display:none">
+  <div class="confirm-modal">
+    <div class="confirm-icon" id="confirm-icon"></div>
+    <div class="confirm-title" id="confirm-title"></div>
+    <div class="confirm-sub" id="confirm-sub"></div>
+    <div class="confirm-order" id="confirm-order" style="display:none">
+      Número de orden<strong id="confirm-order-num"></strong>
+    </div>
+    <button class="confirm-btn" id="confirm-btn" onclick="cerrarConfirmacion()"></button>
+  </div>
+</div>
+
 <!-- MP SDK -->
 <script src="https://sdk.mercadopago.com/js/v2"></script>
 
@@ -414,11 +438,42 @@ footer{background:var(--dark);color:white;padding:64px 48px 32px}
       <!-- Pago con MP Checkout Pro -->
       <div class="chk-section">
         <h3>Método de pago</h3>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Al hacer click en "Pagar" serás redirigido a MercadoPago para completar el pago con tarjeta, débito o transferencia.</p>
-        <button onclick="pagarConMP()" style="width:100%;background:#009ee3;color:white;border:none;padding:16px;border-radius:100px;font-size:14px;font-weight:700;cursor:none;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s">
-          <svg width="20" height="20" viewBox="0 0 48 48" fill="white"><path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm-2 28l-8-8 2.83-2.83L22 26.34l9.17-9.17L34 20l-12 12z"/></svg>
-          Pagar con MercadoPago
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Elegí cómo querés pagar.</p>
+
+        <!-- MP -->
+        <button onclick="pagarConMP()" style="width:100%;background:#009ee3;color:white;border:none;padding:16px;border-radius:14px;font-size:14px;font-weight:700;cursor:none;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s;margin-bottom:12px">
+          💳 Tarjeta de crédito / débito — MercadoPago
         </button>
+
+        <!-- Transferencia -->
+        <button onclick="toggleTransferencia()" style="width:100%;background:var(--off);color:var(--dark);border:1.5px solid #e0ddd6;padding:16px;border-radius:14px;font-size:14px;font-weight:700;cursor:none;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s">
+          🏦 Pago por transferencia bancaria
+        </button>
+
+        <!-- Datos bancarios (oculto por defecto) -->
+        <div id="transferencia-datos" style="display:none;margin-top:14px;background:#f8f6f0;border-radius:14px;padding:20px">
+          <div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Datos para transferir</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--muted)">Alias</span>
+              <span style="font-weight:800;font-size:15px;letter-spacing:.02em">Terpy.ar</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--muted)">Titular</span>
+              <span style="font-weight:700;font-size:13px">Facundo Marceca Saule</span>
+            </div>
+            <div style="height:1px;background:#e0ddd6;margin:4px 0"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--muted)">Total a transferir</span>
+              <span style="font-weight:900;font-size:18px;color:var(--gold)" id="transferencia-total">$0</span>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6">Una vez realizada la transferencia, envianos el comprobante por WhatsApp y coordinamos el envío.</p>
+          <button onclick="confirmarTransferencia()" style="width:100%;background:var(--dark);color:white;border:none;padding:14px;border-radius:100px;font-size:13px;font-weight:700;cursor:none;margin-top:14px;transition:background .2s">
+            Ya transferí — Confirmar pedido
+          </button>
+        </div>
+
         <div class="chk-err" id="chk-pago-err"></div>
       </div>
 
@@ -826,7 +881,7 @@ function tick(){
 window.addEventListener('scroll',()=>{if(!raf){raf=true;requestAnimationFrame(()=>{tick();raf=false;});}},{passive:true});
 
 // ─── MERCADOPAGO ───
-const MP_PUBLIC_KEY = 'TEST-1d1bf530-3f39-4336-9429-fac9422c4559';
+const MP_PUBLIC_KEY = 'APP_USR-74ba770e-0a88-4998-ae86-624ccba50ddf';
 let mpInstance, bricksBuilder, envioData = null;
 
 // ─── CHECKOUT ───
@@ -871,18 +926,14 @@ function renderSummary() {
 }
 
 // ─── CALCULAR ENVÍO (tabla de zonas por CP) ───
+// TODO: MODO TEST — precios en $1, revertir antes de producción
 function getZonaEnvio(cp) {
   const n = parseInt(cp);
-  // CABA y GBA
-  if ((n >= 1000 && n <= 1999) || (n >= 1600 && n <= 1999)) return { zona:'Zona 1', precio:3500, dias:'2-3' };
-  // Buenos Aires provincia, Córdoba, Santa Fe, Entre Ríos, La Pampa
-  if ((n >= 2000 && n <= 3999) || (n >= 5000 && n <= 5999) || (n >= 6000 && n <= 6999)) return { zona:'Zona 2', precio:5500, dias:'3-5' };
-  // Mendoza, San Luis, San Juan, Tucumán, Salta, Jujuy, Santiago del Estero, Catamarca, La Rioja
-  if ((n >= 4000 && n <= 4999) || (n >= 5400 && n <= 5599) || (n >= 7000 && n <= 7999)) return { zona:'Zona 3', precio:7500, dias:'5-7' };
-  // Patagonia, Chaco, Formosa, Misiones, Corrientes, NEA
-  if (n >= 8000 && n <= 9999) return { zona:'Zona 4', precio:9500, dias:'7-10' };
-  // Default
-  return { zona:'Zona 3', precio:7500, dias:'5-7' };
+  if ((n >= 1000 && n <= 1999) || (n >= 1600 && n <= 1999)) return { zona:'Zona 1', precio:1, dias:'2-3' };
+  if ((n >= 2000 && n <= 3999) || (n >= 5000 && n <= 5999) || (n >= 6000 && n <= 6999)) return { zona:'Zona 2', precio:1, dias:'3-5' };
+  if ((n >= 4000 && n <= 4999) || (n >= 5400 && n <= 5599) || (n >= 7000 && n <= 7999)) return { zona:'Zona 3', precio:1, dias:'5-7' };
+  if (n >= 8000 && n <= 9999) return { zona:'Zona 4', precio:1, dias:'7-10' };
+  return { zona:'Zona 3', precio:1, dias:'5-7' };
 }
 
 async function calcEnvio() {
@@ -955,6 +1006,7 @@ async function pagarConMP() {
         'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6YmhrZ2djY3ZzYnNyaWFwZnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTM2MjQsImV4cCI6MjA4OTY4OTYyNH0.FCBF7M59FTcV5r0wP__QB_aX-PgJC0gPMT1HqYrOmUs`,
       },
       body: JSON.stringify({
+        order_id: order.id,
         order: { nombre, apellido, email, tel, dir, cp, envio, items: cart }
       })
     });
@@ -962,8 +1014,8 @@ async function pagarConMP() {
     const mpData = await res.json();
     if (mpData.error) throw new Error(mpData.error);
 
-    // Redirigir a MP
-    window.location.href = mpData.sandbox_init_point || mpData.init_point;
+    // Redirigir a MP (Checkout Pro producción)
+    window.location.href = mpData.init_point;
 
   } catch(e) {
     errEl.textContent = 'Error: ' + e.message;
@@ -1022,8 +1074,8 @@ async function onMPSubmit(formData) {
     const mpData = await res.json();
     if (mpData.error) throw new Error(mpData.error);
 
-    // 3. Redirigir a MP (sandbox en TEST, init_point en producción)
-    window.location.href = mpData.sandbox_init_point || mpData.init_point;
+    // 3. Redirigir a MP Checkout Pro producción
+    window.location.href = mpData.init_point;
 
   } catch(e) {
     errEl.textContent = 'Error al procesar el pedido: ' + e.message;
@@ -1031,12 +1083,120 @@ async function onMPSubmit(formData) {
     console.error(e);
   }
 }
+// ─── TRANSFERENCIA ───
+function toggleTransferencia() {
+  const div = document.getElementById('transferencia-datos');
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0) + (envioData?.precio || 0);
+  document.getElementById('transferencia-total').textContent = '$' + Number(total).toLocaleString('es-AR');
+  div.style.display = div.style.display === 'none' ? 'block' : 'none';
+}
+
+async function confirmarTransferencia() {
+  const nombre   = document.getElementById('chk-nombre').value.trim();
+  const apellido = document.getElementById('chk-apellido').value.trim();
+  const email    = document.getElementById('chk-email').value.trim();
+  const tel      = document.getElementById('chk-tel').value.trim();
+  const dir      = document.getElementById('chk-dir').value.trim();
+  const cp       = document.getElementById('chk-cp').value.trim();
+  const errEl    = document.getElementById('chk-pago-err');
+  errEl.style.display = 'none';
+
+  if (!nombre || !email) { errEl.textContent = 'Completá nombre y email.'; errEl.style.display='block'; return; }
+  if (!envioData) { errEl.textContent = 'Calculá el envío primero.'; errEl.style.display='block'; return; }
+
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0) + envioData.precio;
+
+  try {
+    const { data: order, error } = await _sb.from('orders').insert({
+      user_id: user?.id || null,
+      email, status: 'pending_transfer', total,
+      shipping_address: { nombre, apellido, email, tel, dir, cp },
+    }).select().single();
+    if (error) throw error;
+
+    await _sb.from('order_items').insert(
+      cart.map(i => ({ order_id: order.id, product_id: i.id, quantity: i.qty, unit_price: i.price }))
+    );
+
+    cart = []; renderCart(); closeCheckout();
+    toast('¡Pedido registrado! Envianos el comprobante por WhatsApp 🌿', 'ok');
+    setTimeout(() => {
+      window.open(`https://wa.me/5491159130538?text=Hola%20Terpy!%20Acabo%20de%20realizar%20una%20transferencia%20por%20$${Number(total).toLocaleString('es-AR')}%20para%20el%20pedido%20de%20${nombre}%20${apellido}.%20Adjunto%20el%20comprobante.`, '_blank');
+    }, 1000);
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+// ─── CONFIRMACIÓN POST-PAGO (redirect de MercadoPago) ───
+function cerrarConfirmacion() {
+  document.getElementById('confirm-bg').style.display = 'none';
+  // Limpia los params de la URL sin recargar
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+async function checkMPRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status') || params.get('collection_status');
+  const orderId = params.get('external_reference');
+  const paymentId = params.get('payment_id') || params.get('collection_id');
+  if (!status || !orderId) return;
+
+  const bg    = document.getElementById('confirm-bg');
+  const icon  = document.getElementById('confirm-icon');
+  const title = document.getElementById('confirm-title');
+  const sub   = document.getElementById('confirm-sub');
+  const orderBox = document.getElementById('confirm-order');
+  const orderNum = document.getElementById('confirm-order-num');
+  const btn   = document.getElementById('confirm-btn');
+
+  // Mostrar número de orden abreviado
+  orderBox.style.display = 'block';
+  orderNum.textContent = '#' + orderId.slice(0, 8).toUpperCase();
+
+  if (status === 'approved') {
+    icon.textContent  = '✅';
+    title.textContent = '¡Pago confirmado!';
+    sub.textContent   = 'Tu pedido fue recibido y lo estamos preparando. Te contactamos pronto para coordinar el envío.';
+    btn.textContent   = 'Volver a la tienda';
+    btn.style.background = '#1a1a1a';
+    btn.style.color      = 'white';
+    // Actualizar estado de la orden en Supabase
+    await _sb.from('orders').update({ status: 'paid', payment_ref: paymentId }).eq('id', orderId);
+  } else if (status === 'pending' || status === 'in_process') {
+    icon.textContent  = '⏳';
+    title.textContent = 'Pago pendiente';
+    sub.textContent   = 'Tu pago está siendo procesado. En cuanto se acredite, preparamos tu pedido. Revisá tu email para más información.';
+    btn.textContent   = 'Entendido';
+    btn.style.background = '#f5a623';
+    btn.style.color      = 'white';
+  } else {
+    icon.textContent  = '❌';
+    title.textContent = 'Pago rechazado';
+    sub.textContent   = 'No se pudo procesar el pago. Podés intentarlo de nuevo con otro medio de pago.';
+    orderBox.style.display = 'none';
+    btn.textContent   = 'Intentar de nuevo';
+    btn.style.background = '#e24b4a';
+    btn.style.color      = 'white';
+    btn.onclick = () => { cerrarConfirmacion(); openCheckout(); };
+  }
+
+  bg.style.display = 'flex';
+  // Limpiar carrito si el pago fue exitoso
+  if (status === 'approved') {
+    cart = [];
+    renderCart();
+  }
+}
+
 (async()=>{
   tick();
   await loadProducts();
   const{data:{session}}=await _sb.auth.getSession();
   user=session?.user||null;
   if(user){document.getElementById('authlbl').textContent='Mi cuenta';await loadCartDB();}
+  await checkMPRedirect();
 })();
 </script>
 </body>

@@ -1192,9 +1192,16 @@ async function checkMPRedirect() {
   orderBox.style.display = 'block';
   orderNum.textContent = '#' + orderId.slice(0, 8).toUpperCase();
 
+  // Obtener nombre del comprador
+  let nombreComprador = '';
+  const { data: orderData } = await _sb.from('orders').select('shipping_address').eq('id', orderId).single();
+  if (orderData?.shipping_address?.nombre) {
+    nombreComprador = orderData.shipping_address.nombre;
+  }
+
   if (status === 'approved') {
     icon.textContent  = '✅';
-    title.textContent = '¡Pago confirmado!';
+    title.textContent = nombreComprador ? `¡Gracias, ${nombreComprador}!` : '¡Pago confirmado!';
     sub.textContent   = 'Tu pedido fue recibido y lo estamos preparando. Te contactamos pronto para coordinar el envío.';
     btn.textContent   = 'Volver a la tienda';
     btn.style.background = '#1a1a1a';

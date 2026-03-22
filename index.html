@@ -1194,7 +1194,7 @@ async function checkMPRedirect() {
 
   // Obtener nombre del comprador
   let nombreComprador = '';
-  const { data: orderData } = await _sb.from('orders').select('shipping_address').eq('id', orderId).single();
+  const { data: orderData } = await _sb.from('orders').select('shipping_address, total, email').eq('id', orderId).single();
   if (orderData?.shipping_address?.nombre) {
     nombreComprador = orderData.shipping_address.nombre;
   }
@@ -1208,6 +1208,37 @@ async function checkMPRedirect() {
     btn.style.color      = 'white';
     // Actualizar estado de la orden en Supabase
     await _sb.from('orders').update({ status: 'paid', payment_ref: paymentId }).eq('id', orderId);
+
+    // Enviar emails de confirmación
+    if (orderData) {
+      const addr = orderData.shipping_address || {};
+      const { data: itemsData } = await _sb.from('order_items')
+        .select('quantity, unit_price, products(name)')
+        .eq('order_id', orderId);
+      const items = (itemsData || []).map((i: any) => ({
+        name: i.products?.name || 'Producto',
+        qty: i.quantity,
+        price: i.unit_price,
+      }));
+      fetch('https://uzbhkggccvsbsriapfsa.supabase.co/functions/v1/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6YmhrZ2djY3ZzYnNyaWFwZnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTM2MjQsImV4cCI6MjA4OTY4OTYyNH0.FCBF7M59FTcV5r0wP__QB_aX-PgJC0gPMT1HqYrOmUs`,
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          nombre: addr.nombre || '',
+          apellido: addr.apellido || '',
+          email: addr.email || orderData.email,
+          items,
+          total: orderData.total,
+          envio: addr.envio || 0,
+          dir: addr.dir || '',
+          cp: addr.cp || '',
+        }),
+      });
+    }
   } else if (status === 'pending' || status === 'in_process') {
     icon.textContent  = '⏳';
     title.textContent = 'Pago pendiente';

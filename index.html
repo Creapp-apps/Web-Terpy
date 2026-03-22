@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terpy — Yerba Mate Ultra-Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fraunces:ital,wght@0,400;0,700;1,300;1,400;1,600;1,900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _sb = window.supabase.createClient(
+    'https://uzbhkggccvsbsriapfsa.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6YmhrZ2djY3ZzYnNyaWFwZnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTM2MjQsImV4cCI6MjA4OTY4OTYyNH0.FCBF7M59FTcV5r0wP__QB_aX-PgJC0gPMT1HqYrOmUs'
+  );
+</script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --sage:#d4ecd0;--sage-dark:#b8dab3;--gold:#c8922a;--gold-light:#e8b04a;
+  --cream:#faf8f4;--off:#f2efe8;--dark:#1a1712;--dark2:#2a2520;--muted:#6b6560;
+  --violet:#a07ed4;--orange:#e07830;
+}
+html{scroll-behavior:smooth;cursor:none}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#cur{position:fixed;top:0;left:0;width:12px;height:12px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s}
+#cur.h{width:20px;height:20px;opacity:.7}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:72px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:var(--sage);border-bottom:1px solid var(--sage-dark);transition:background .3s,border-color .3s}
+nav.tp{background:transparent!important;border-bottom-color:transparent!important}
+nav.tp .nlt,nav.tp .nl a{color:white!important}
+nav.tp .nc{background:rgba(255,255,255,.18)!important;backdrop-filter:blur(8px)}
+.nlogo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nlt{font-family:'Fraunces',serif;font-weight:900;font-size:26px;color:var(--dark);letter-spacing:-1px}
+.ndot{width:8px;height:8px;background:var(--gold);border-radius:50%}
+.nl{display:flex;gap:32px}
+.nl a{text-decoration:none;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dark);opacity:.7;transition:opacity .2s}
+.nl a:hover{opacity:1}
+.nr{display:flex;gap:12px}
+.nc{display:flex;align-items:center;gap:8px;background:var(--dark);color:white;padding:10px 18px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.05em;text-decoration:none;cursor:none;transition:background .2s}
+.nc:hover{background:var(--gold)}
+.nc.ghost{background:rgba(0,0,0,.12)}
+
+/* PARALLAX */
+.hero-parallax{position:relative;height:600vh}
+.hero-sticky{position:sticky;top:0;width:100%;height:100vh;overflow:hidden}
+
+/* BG LAYERS */
+.bgl{position:absolute;inset:0;opacity:0;will-change:opacity}
+.bgl img{width:100%;height:100%;object-fit:cover;object-position:center}
+.bgl.b0{background:#2a1a3e;opacity:1}
+.bgl.b1{background:#1a0a2e}
+.bgl.b2{background:#1a0d00}
+.bgl.b3{background:#1a1400}
+
+/* overlay */
+.hero-ov{position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(to right,rgba(0,0,0,.5) 0%,rgba(0,0,0,.1) 50%,rgba(0,0,0,.3) 100%)}
+
+/* PANELS */
+.hp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;opacity:0;will-change:opacity;pointer-events:none;max-width:800px;width:90%;text-align:center;display:flex;flex-direction:column;align-items:center}
+/* 3-col product panels override */
+.hp-prod{top:0;left:0;transform:none;width:100%;height:100%;max-width:100%;text-align:left;align-items:center;flex-direction:row;justify-content:space-between;padding:0 64px}
+.hph1{font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(52px,7vw,100px);line-height:.9;text-transform:uppercase;letter-spacing:-.03em;color:white}
+.hph1 .it{font-family:'Fraunces',serif;font-style:italic;font-weight:300;text-transform:none;letter-spacing:-.01em}
+.hpsub{font-family:'Fraunces',serif;font-style:italic;font-size:18px;color:rgba(255,255,255,.7);margin-top:20px;line-height:1.5;max-width:380px}
+.hptag{display:inline-block;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);color:white;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:24px}
+.hpbtn{display:inline-flex;align-items:center;gap:10px;background:white;color:var(--dark);padding:15px 30px;border-radius:100px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;margin-top:32px;transition:background .2s,transform .15s;pointer-events:all}
+.hpbtn:hover{background:var(--gold);color:white;transform:translateY(-2px)}
+.hpptag{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+.hppef{font-family:'Fraunces',serif;font-style:italic;font-size:19px;color:rgba(255,255,255,.72);margin-top:14px;line-height:1.4}
+.hppterp{display:inline-block;margin-top:18px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 18px;border-radius:100px;border:1.5px solid rgba(255,255,255,.3);color:white}
+.hppbtn{display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding:13px 26px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:white;text-decoration:none;pointer-events:all;transition:transform .2s,opacity .2s}
+.hppbtn:hover{transform:translateY(-2px);opacity:.85}
+/* 3-col product panels */
+.hp-prod{left:0!important;top:0!important;width:100%;height:100%;transform:none!important;display:flex;align-items:center;justify-content:space-between;padding:0 64px;pointer-events:none}
+.pp-name{font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(56px,7.5vw,112px);line-height:.85;text-transform:uppercase;letter-spacing:-.04em;flex:0 0 auto;max-width:36%}
+.mango-accent-txt{color:#c084fc}
+.orange-accent-txt{color:#fb923c}
+.lemon-accent-txt{color:var(--gold)}
+.pp-info{flex:0 0 auto;max-width:28%;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ca{color:#c084fc}.oa{color:#fb923c}.la{color:var(--gold)}
+.cb{background:#7c5cbf}.ob{background:var(--orange)}.lb{background:var(--gold)}
+
+/* DOTS */
+.hdots{position:absolute;right:36px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:3}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .4s}
+.dot.on{background:white;transform:scale(1.4)}
+.dot.dc.on{background:#c084fc}
+.dot.do.on{background:#fb923c}
+.dot.dl.on{background:var(--gold)}
+
+/* SCROLL HINT */
+.shint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,.5);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;z-index:3}
+.sline{width:1px;height:36px;background:linear-gradient(to bottom,rgba(255,255,255,.5),transparent);animation:sl 1.6s ease-in-out infinite}
+@keyframes sl{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}50.01%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* SECTIONS */
+section{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+section.vis{opacity:1;transform:translateY(0)}
+.stag{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.sh2{font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(38px,5vw,68px);line-height:.92;text-transform:uppercase;letter-spacing:-.03em}
+.sh2 em{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:.62em;display:block;text-transform:none;color:var(--muted)}
+
+/* TRIDENTE */
+.tridente{padding:100px 48px;background:var(--cream)}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
+.pcard{background:white;border-radius:20px;overflow:hidden;border:1px solid rgba(0,0,0,.06);transition:transform .3s,box-shadow .3s}
+.pcard:hover{transform:translateY(-8px);box-shadow:0 24px 60px rgba(0,0,0,.1)}
+.pvis{height:300px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:none}
+.pbadge{position:absolute;top:14px;left:14px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:100px}
+.pbody{padding:24px}
+.pname{font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.03em}
+.pterp{font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--muted);margin-top:4px}
+.pef{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+.pfoot{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid rgba(0,0,0,.06)}
+.pprice{font-weight:900;font-size:20px}
+.padd{background:var(--dark);color:white;border:none;padding:10px 20px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:none;opacity:0;transform:translateY(4px);transition:all .2s;position:relative;overflow:hidden}
+.pcard:hover .padd{opacity:1;transform:translateY(0)}
+.padd:hover{background:var(--gold)}
+.padd.loading{background:var(--gold);pointer-events:none}
+.padd.loading::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer .7s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+/* Partícula voladora */
+.fly-mate{position:fixed;font-size:28px;pointer-events:none;z-index:99999;transition:none;will-change:transform,opacity}
+@keyframes flyToCart{0%{transform:scale(1) rotate(0deg);opacity:1}60%{transform:scale(1.4) rotate(-20deg);opacity:1}100%{transform:scale(0.3) rotate(15deg);opacity:0}}
+.pcard.pop{animation:cardPop .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cardPop{0%{transform:translateY(-8px) scale(1)}50%{transform:translateY(-12px) scale(1.03)}100%{transform:translateY(-8px) scale(1)}}
+
+/* SPLIT */
+.split{display:grid;grid-template-columns:1fr 1fr;min-height:600px;background:var(--off)}
+.split-text{padding:80px 64px;display:flex;flex-direction:column;justify-content:center}
+.split-it{font-family:'Fraunces',serif;font-style:italic;font-size:18px;color:var(--muted);line-height:1.6;margin:20px 0 28px}
+.split-ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.split-ul li{display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500}
+.split-ul li::before{content:'';width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0}
+.split-vis{overflow:hidden}
+.split-vis img{width:100%;height:100%;object-fit:cover}
+
+/* FEATURES */
+.feats{padding:100px 48px;background:var(--dark);color:white}
+.feats .stag{color:var(--gold)}
+.feats .sh2{color:white}
+.feats .sh2 em{color:rgba(255,255,255,.4)}
+.fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:60px}
+.fc{background:#2a2520;padding:40px 28px;position:relative;overflow:hidden;transition:background .3s}
+.fc:first-child{border-radius:16px 0 0 16px}
+.fc:last-child{border-radius:0 16px 16px 0}
+.fc:hover{background:#302b25}
+.fnum{position:absolute;top:18px;right:20px;font-size:44px;font-weight:900;color:rgba(255,255,255,.04)}
+.fic{font-size:24px;margin-bottom:20px}
+.fc h3{font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.fc p{font-size:13px;line-height:1.7;color:rgba(255,255,255,.5)}
+
+/* TERPENOS */
+.terps{padding:100px 48px;background:var(--off)}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
+.tc{border-radius:20px;padding:44px 32px;position:relative;overflow:hidden;transition:transform .3s}
+.tc:hover{transform:translateY(-6px)}
+.tc:nth-child(1){background:#f4f0ff}
+.tc:nth-child(2){background:#fff5ec}
+.tc:nth-child(3){background:#fffbf0}
+.tblob{position:absolute;right:-30px;top:-30px;width:140px;height:180px;border-radius:40% 60% 60% 40%/40% 40% 60% 60%;opacity:.22}
+.tc:nth-child(1) .tblob{background:var(--violet)}
+.tc:nth-child(2) .tblob{background:var(--orange)}
+.tc:nth-child(3) .tblob{background:var(--gold)}
+.tname{font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:34px;margin-bottom:6px;position:relative;z-index:1}
+.tc:nth-child(1) .tname{color:var(--violet)}
+.tc:nth-child(2) .tname{color:var(--orange)}
+.tc:nth-child(3) .tname{color:#a07010}
+.tprod{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;position:relative;z-index:1}
+.tdesc{font-size:13px;line-height:1.7;color:var(--muted);position:relative;z-index:1}
+.tef{margin-top:18px;padding:10px 14px;background:rgba(0,0,0,.04);border-radius:10px;font-size:13px;font-weight:600;position:relative;z-index:1}
+
+/* RESEÑAS */
+.resenas{padding:100px 48px;background:var(--cream)}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
+.rc{background:white;border-radius:16px;padding:28px;border:1px solid rgba(0,0,0,.06)}
+.rstars{color:var(--gold);font-size:16px;margin-bottom:14px}
+.rtxt{font-family:'Fraunces',serif;font-style:italic;font-size:15px;line-height:1.6;color:var(--dark);margin-bottom:18px}
+.rautor{display:flex;align-items:center;gap:10px}
+.rav{width:38px;height:38px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.rnombre{font-size:13px;font-weight:700}
+.rloc{font-size:11px;color:var(--muted)}
+
+/* NEWSLETTER */
+.nl-sec{background:var(--sage);padding:72px 48px;display:flex;align-items:center;justify-content:space-between;gap:48px}
+.nl-sec h2{font-weight:900;font-size:clamp(26px,3vw,40px);text-transform:uppercase;letter-spacing:-.02em}
+.nl-sec p{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--muted);margin-top:6px}
+.nlform{display:flex;gap:12px;flex-shrink:0}
+.nlinput{padding:13px 20px;border:2px solid rgba(0,0,0,.1);border-radius:100px;font-size:14px;font-family:'Inter',sans-serif;width:260px;outline:none;background:white;transition:border-color .2s}
+.nlinput:focus{border-color:var(--dark)}
+.nlbtn{background:var(--dark);color:white;border:none;padding:13px 26px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:none;transition:background .2s;white-space:nowrap}
+.nlbtn:hover{background:var(--gold)}
+
+/* CTA */
+.cta{margin:0 48px 80px;border-radius:24px;background:var(--dark);padding:80px 64px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.cta::before{content:'TERPY';position:absolute;right:40px;top:50%;transform:translateY(-50%);font-weight:900;font-size:150px;color:rgba(255,255,255,.03);pointer-events:none}
+.cta h2{font-weight:900;font-size:clamp(30px,4vw,52px);text-transform:uppercase;letter-spacing:-.03em;color:white;line-height:1}
+.cta h2 span{color:var(--gold)}
+.cta p{font-family:'Fraunces',serif;font-style:italic;font-size:17px;color:rgba(255,255,255,.5);margin-top:10px}
+.ctabtns{display:flex;gap:14px;flex-shrink:0}
+.bprim{background:var(--gold);color:white;padding:15px 32px;border-radius:100px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:transform .2s,background .2s}
+.bprim:hover{transform:translateY(-2px);background:var(--gold-light)}
+.bsec{background:transparent;color:white;padding:15px 32px;border-radius:100px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:2px solid rgba(255,255,255,.25);transition:border-color .2s}
+.bsec:hover{border-color:white}
+
+/* FOOTER */
+footer{background:var(--dark);color:white;padding:64px 48px 32px}
+.ftop{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.fbrand h3{font-family:'Fraunces',serif;font-weight:900;font-size:30px;margin-bottom:10px}
+.fbrand p{font-size:13px;color:rgba(255,255,255,.4);line-height:1.7;max-width:230px}
+.fcol h4{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.fcol ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.fcol ul a{text-decoration:none;color:rgba(255,255,255,.45);font-size:13px;transition:color .2s}
+.fcol ul a:hover{color:white}
+.fbot{border-top:1px solid rgba(255,255,255,.07);padding-top:22px;display:flex;justify-content:space-between;align-items:center}
+.fbot p{font-size:12px;color:rgba(255,255,255,.3)}
+.fsoc{display:flex;gap:12px}
+.fsoc a{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.45);text-decoration:none;font-size:12px;font-weight:700;transition:border-color .2s,color .2s}
+.fsoc a:hover{border-color:var(--gold);color:var(--gold)}
+
+/* CART */
+.cov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:8999;opacity:0;pointer-events:none;transition:opacity .3s}
+.cov.on{opacity:1;pointer-events:all}
+.cdrawer{position:fixed;top:0;right:-420px;width:420px;height:100vh;background:white;z-index:9000;box-shadow:-8px 0 40px rgba(0,0,0,.12);transition:right .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.cdrawer.on{right:0}
+.chead{padding:24px;border-bottom:1px solid #f0ede6;display:flex;align-items:center;justify-content:space-between}
+.chead h3{font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.04em}
+.cx{width:34px;height:34px;border-radius:50%;border:none;background:var(--off);cursor:none;font-size:16px;display:flex;align-items:center;justify-content:center}
+.clist{flex:1;overflow-y:auto;padding:16px 24px}
+.ci{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #f0ede6;align-items:center}
+.cith{width:48px;height:64px;border-radius:8px;background:#0d0d0d;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:900;font-size:14px}
+.ciin{flex:1}
+.cin{font-weight:700;font-size:14px}
+.cip{font-size:13px;color:var(--muted);margin-top:2px}
+.ciq{display:flex;align-items:center;gap:10px;margin-top:8px}
+.qb{width:26px;height:26px;border-radius:50%;border:1.5px solid #ddd;background:none;cursor:none;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.qb:hover{border-color:var(--dark)}
+.qn{font-weight:700;font-size:14px;min-width:20px;text-align:center}
+.crm{background:none;border:none;cursor:none;color:#ccc;font-size:16px;transition:color .2s}
+.crm:hover{color:#e24b4a}
+.cfoot{padding:20px 24px;border-top:1px solid #f0ede6}
+.ctrow{display:flex;justify-content:space-between;margin-bottom:14px}
+.ctrow span{font-weight:800;font-size:16px}
+.cchk{width:100%;background:var(--dark);color:white;border:none;padding:15px;border-radius:100px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:none;transition:background .2s}
+.cchk:hover{background:var(--gold)}
+.cemp{text-align:center;padding:60px 24px;color:var(--muted)}
+.cemp p{margin-top:10px;font-size:14px}
+
+/* AUTH */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(4px)}
+.mbg.on{opacity:1;pointer-events:all}
+.modal{background:white;border-radius:24px;padding:40px;width:100%;max-width:400px;position:relative;transform:translateY(20px);transition:transform .25s}
+.mbg.on .modal{transform:translateY(0)}
+.mx{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:var(--off);cursor:none;font-size:15px;display:flex;align-items:center;justify-content:center}
+.modal h2{font-weight:900;font-size:22px;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:6px}
+.modal p{font-size:14px;color:var(--muted);margin-bottom:22px}
+.modal input{width:100%;padding:13px 15px;border:1.5px solid #e8e4dc;border-radius:12px;font-size:14px;font-family:'Inter',sans-serif;margin-bottom:10px;outline:none;transition:border-color .2s}
+.modal input:focus{border-color:var(--dark)}
+.msub{width:100%;background:var(--dark);color:white;border:none;padding:14px;border-radius:100px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:none;margin-top:4px;transition:background .2s}
+.msub:hover{background:var(--gold)}
+.msw{text-align:center;margin-top:14px;font-size:13px;color:var(--muted)}
+.msw a{color:var(--dark);font-weight:700;cursor:none}
+.merr{color:#e24b4a;font-size:13px;margin-bottom:8px;min-height:18px}
+.mok{color:#2a7a2a;font-size:13px;margin-bottom:8px;min-height:18px}
+
+/* TOAST */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:white;padding:12px 22px;border-radius:100px;font-size:13px;font-weight:600;z-index:99998;transition:transform .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;pointer-events:none}
+
+/* CONFIRMACIÓN DE PAGO */
+.confirm-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
+.confirm-modal{background:white;border-radius:28px;width:100%;max-width:480px;padding:48px 40px;text-align:center;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.confirm-icon{font-size:64px;margin-bottom:20px}
+.confirm-title{font-size:26px;font-weight:800;margin-bottom:8px}
+.confirm-sub{font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.5}
+.confirm-order{background:#f5f5f5;border-radius:14px;padding:16px 20px;margin-bottom:28px;font-size:13px;color:var(--muted)}
+.confirm-order strong{display:block;font-size:18px;font-weight:800;color:var(--dark);margin-top:4px}
+.confirm-btn{display:inline-block;padding:14px 32px;border-radius:100px;font-weight:700;font-size:15px;cursor:pointer;border:none;width:100%}
+
+/* CHECKOUT */
+.chk-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:10001;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(6px);overflow-y:auto}
+.chk-bg.on{opacity:1;pointer-events:all}
+.chk-modal{background:white;border-radius:24px;width:100%;max-width:580px;position:relative;transform:translateY(20px);transition:transform .3s}
+.chk-bg.on .chk-modal{transform:translateY(0)}
+.chk-top{padding:28px 32px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0ede6}
+.chk-top h2{font-weight:900;font-size:18px;text-transform:uppercase;letter-spacing:-.01em}
+.chk-x{width:32px;height:32px;border-radius:50%;border:none;background:var(--off);cursor:none;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chk-body{padding:28px 32px}
+.chk-section{margin-bottom:24px}
+.chk-section h3{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.chk-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chk-row.full{grid-template-columns:1fr}
+.chk-field{display:flex;flex-direction:column;gap:6px}
+.chk-field label{font-size:12px;font-weight:600;color:var(--muted)}
+.chk-field input,.chk-field select{padding:12px 14px;border:1.5px solid #e8e4dc;border-radius:12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;background:white}
+.chk-field input:focus,.chk-field select:focus{border-color:var(--dark)}
+.chk-summary{background:var(--off);border-radius:16px;padding:20px;margin-bottom:24px}
+.chk-srow{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:6px 0}
+.chk-srow.total{font-weight:800;font-size:16px;border-top:1px solid #ddd;padding-top:12px;margin-top:6px}
+.chk-envio{display:flex;align-items:center;gap:10px;padding:14px;background:#f8f8f8;border-radius:12px;margin-bottom:16px;font-size:13px}
+.chk-envio-calc{background:var(--dark);color:white;border:none;padding:10px 18px;border-radius:100px;font-size:12px;font-weight:700;cursor:none;white-space:nowrap;transition:background .2s}
+.chk-envio-calc:hover{background:var(--gold)}
+#mp-brick-container{min-height:100px}
+.chk-err{color:#e24b4a;font-size:13px;margin-top:8px;display:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{background:#2a7a2a}
+.toast.err{background:#a32d2d}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cur"></div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#" class="nlogo"><span class="nlt">Terpy</span><span class="ndot"></span></a>
+  <div class="nl">
+    <a href="#tridente">Productos</a>
+    <a href="#porque">¿Qué es Terpy?</a>
+    <a href="#terpenos">Nuestros Blends</a>
+    <a href="#resenas">Reseñas</a>
+  </div>
+  <div class="nr">
+    <a href="#" class="nc ghost" id="btn-auth" onclick="openAuth(event)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span id="authlbl">Ingresar</span>
+    </a>
+    <a href="#" class="nc" id="btn-cart" onclick="toggleCart(event)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Carrito (<span id="ccnt">0</span>)
+    </a>
+  </div>
+</nav>
+
+<!-- CART -->
+<div class="cov" id="cov" onclick="toggleCart(event)"></div>
+<div class="cdrawer" id="cdrawer">
+  <div class="chead"><h3>Tu Carrito</h3><button class="cx" onclick="toggleCart(event)">✕</button></div>
+  <div class="clist" id="clist"><div class="cemp"><div style="font-size:48px">🧉</div><p>Tu carrito está vacío.<br>Agregá tu primer Terpy.</p></div></div>
+  <div class="cfoot" id="cfoot" style="display:none">
+    <div class="ctrow"><span>Total</span><span id="ctotal">$0</span></div>
+    <button class="cchk" onclick="openCheckout()">Finalizar compra →</button>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div class="mbg" id="auth-modal">
+  <div class="modal">
+    <button class="mx" onclick="closeAuth()">✕</button>
+    <h2 id="mtitle">Bienvenido</h2>
+    <p id="msub">Ingresá para guardar tu carrito y ver tus pedidos.</p>
+    <div class="merr" id="merr"></div>
+    <div class="mok"  id="mok"></div>
+    <div id="mnamew" style="display:none"><input type="text" id="mname" placeholder="Tu nombre completo"/></div>
+    <input type="email"    id="memail" placeholder="tu@email.com"/>
+    <input type="password" id="mpass"  placeholder="Contraseña"/>
+    <button class="msub" onclick="submitAuth()"><span id="mbtn">Ingresar</span></button>
+    <div class="msw"><span id="mswtxt">¿No tenés cuenta?</span><a href="#" onclick="toggleMode(event)" id="mswlnk"> Registrate</a></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- CONFIRMACIÓN DE PAGO -->
+<div class="confirm-bg" id="confirm-bg" style="display:none">
+  <div class="confirm-modal">
+    <div class="confirm-icon" id="confirm-icon"></div>
+    <div class="confirm-title" id="confirm-title"></div>
+    <div class="confirm-sub" id="confirm-sub"></div>
+    <div class="confirm-order" id="confirm-order" style="display:none">
+      Número de orden<strong id="confirm-order-num"></strong>
+    </div>
+    <button class="confirm-btn" id="confirm-btn" onclick="cerrarConfirmacion()"></button>
+  </div>
+</div>
+
+<!-- MP SDK -->
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+
+<!-- CHECKOUT MODAL -->
+<div class="chk-bg" id="chk-bg">
+  <div class="chk-modal">
+    <div class="chk-top">
+      <h2>Finalizar Compra</h2>
+      <button class="chk-x" onclick="closeCheckout()">✕</button>
+    </div>
+    <div class="chk-body">
+
+      <!-- Resumen -->
+      <div class="chk-summary" id="chk-summary"></div>
+
+      <!-- Datos personales -->
+      <div class="chk-section">
+        <h3>Tus datos</h3>
+        <div class="chk-row">
+          <div class="chk-field"><label>Nombre</label><input type="text" id="chk-nombre" placeholder="Juan"/></div>
+          <div class="chk-field"><label>Apellido</label><input type="text" id="chk-apellido" placeholder="García"/></div>
+        </div>
+        <div class="chk-row" style="margin-top:12px">
+          <div class="chk-field"><label>Email</label><input type="email" id="chk-email" placeholder="juan@email.com"/></div>
+          <div class="chk-field"><label>Teléfono</label><input type="tel" id="chk-tel" placeholder="11 1234-5678"/></div>
+        </div>
+      </div>
+
+      <!-- Envío -->
+      <div class="chk-section">
+        <h3>Envío</h3>
+        <div class="chk-row">
+          <div class="chk-field"><label>Código Postal</label><input type="text" id="chk-cp" placeholder="1425" maxlength="8"/></div>
+          <div class="chk-field" style="justify-content:flex-end;padding-top:22px">
+            <button class="chk-envio-calc" onclick="calcEnvio()">Calcular envío</button>
+          </div>
+        </div>
+        <div class="chk-row full" style="margin-top:12px">
+          <div class="chk-field"><label>Dirección</label><input type="text" id="chk-dir" placeholder="Av. Corrientes 1234, Piso 2 Depto A"/></div>
+        </div>
+        <div id="chk-envio-result" style="margin-top:12px;display:none">
+          <div class="chk-envio">
+            <span>📦</span>
+            <div style="flex:1">
+              <div style="font-weight:700" id="envio-nombre">Correo Argentino</div>
+              <div style="color:var(--muted);font-size:12px" id="envio-dias">3-5 días hábiles</div>
+            </div>
+            <div style="font-weight:800" id="envio-precio">$0</div>
+          </div>
+        </div>
+        <div class="chk-err" id="chk-envio-err">No pudimos calcular el envío. Ingresá un código postal válido.</div>
+        <!-- Retiro en punto -->
+        <div style="margin-top:12px;padding:14px;border:1.5px dashed #ddd;border-radius:12px;display:flex;align-items:center;gap:12px;opacity:.6">
+          <span style="font-size:20px">📍</span>
+          <div>
+            <div style="font-weight:700;font-size:13px">Retiro en punto de entrega</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Próximamente disponible</div>
+          </div>
+          <span style="margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.08em;background:#f0ede6;padding:4px 10px;border-radius:100px;color:var(--muted)">PRONTO</span>
+        </div>
+      </div>
+
+      <!-- Pago con MP Checkout Pro -->
+      <div class="chk-section">
+        <h3>Método de pago</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Elegí cómo querés pagar.</p>
+
+        <!-- MP -->
+        <button onclick="pagarConMP()" style="width:100%;background:#009ee3;color:white;border:none;padding:16px;border-radius:14px;font-size:14px;font-weight:700;cursor:none;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s;margin-bottom:12px">
+          💳 Tarjeta de crédito / débito — MercadoPago
+        </button>
+
+        <!-- Transferencia -->
+        <button onclick="toggleTransferencia()" style="width:100%;background:var(--off);color:var(--dark);border:1.5px solid #e0ddd6;padding:16px;border-radius:14px;font-size:14px;font-weight:700;cursor:none;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s">
+          🏦 Pago por transferencia bancaria
+        </button>
+
+        <!-- Datos bancarios (oculto por defecto) -->
+        <div id="transferencia-datos" style="display:none;margin-top:14px;background:#f8f6f0;border-radius:14px;padding:20px">
+          <div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Datos para transferir</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--muted)">Alias</span>
+              <span style="font-weight:800;font-size:15px;letter-spacing:.02em">Terpy.ar</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--muted)">Titular</span>
+              <span style="font-weight:700;font-size:13px">Facundo Marceca Saule</span>
+            </div>
+            <div style="height:1px;background:#e0ddd6;margin:4px 0"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;color:var(--muted)">Total a transferir</span>
+              <span style="font-weight:900;font-size:18px;color:var(--gold)" id="transferencia-total">$0</span>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6">Una vez realizada la transferencia, envianos el comprobante por WhatsApp y coordinamos el envío.</p>
+          <button onclick="confirmarTransferencia()" style="width:100%;background:var(--dark);color:white;border:none;padding:14px;border-radius:100px;font-size:13px;font-weight:700;cursor:none;margin-top:14px;transition:background .2s">
+            Ya transferí — Confirmar pedido
+          </button>
+        </div>
+
+        <div class="chk-err" id="chk-pago-err"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PARALLAX HERO -->
+<div class="hero-parallax" id="hp">
+  <div class="hero-sticky">
+
+    <!-- BASE: always dark -->
+    <div style="position:absolute;inset:0;background:#0d0a14;z-index:0"></div>
+
+    <!-- BG 0: Los 3 paquetes flotando -->
+    <div class="bgl b0" id="bg0">
+      <img src="Gemini_Generated_Image_dsib0ndsib0ndsib.png" alt="" onerror="this.style.display='none'"/>
+    </div>
+    <!-- Dimmer: oscurece los paquetes cuando aparece el texto intro -->
+    <div id="bg-dimmer" style="position:absolute;inset:0;background:rgba(0,0,0,0);z-index:1;pointer-events:none;transition:none"></div>
+    <!-- BG 1: Mango -->
+    <div class="bgl b1" id="bg1">
+      <img src="hero-mango.png" alt="" onerror="this.style.display='none'"/>
+    </div>
+    <!-- BG 2: Orange Cookies -->
+    <div class="bgl b2" id="bg2">
+      <img src="hero-orange.png" alt="" onerror="this.style.display='none'"/>
+    </div>
+    <!-- BG 3: Lemon -->
+    <div class="bgl b3" id="bg3">
+      <img src="hero-lemon.png" alt="" onerror="this.style.display='none'"/>
+    </div>
+
+    <div class="hero-ov"></div>
+
+    <!-- PANEL: "Una yerba distinta" — centrado horizontal, arriba del centro -->
+    <div class="hp" id="p0" style="left:50%;transform:translate(-50%,-60%);text-align:center;max-width:800px">
+      <div class="hptag">🌿 Argentina · Lote #001 · 250g</div>
+      <h1 class="hph1">Una yerba<br>distinta.<br><span class="it">Pero de verdad.</span></h1>
+      <p class="hpsub" style="margin:20px auto 0;text-align:center">Yerba Mate saborizada con Terpenos botánicos. Cada mate una nueva experiencia.</p>
+      <a href="#tridente" class="hpbtn" style="margin:32px auto 0">Descubrí Terpy →</a>
+    </div>
+
+    <!-- PANEL: Mango -->
+    <div class="hp hp-prod" id="p1">
+      <div class="pp-name mango-accent-txt">MANGO</div>
+      <div class="pp-info">
+        <div class="hpptag ca">Mirceno + Limoneno</div>
+        <div class="hppef">Relajante.<br>Energía sin ansiedad.<br>Enfoque.</div>
+        <div class="hppterp">Mirceno + Limoneno</div><br>
+        <a href="#tridente" class="hppbtn cb">Ver producto →</a>
+      </div>
+    </div>
+
+    <!-- PANEL: Orange Cookies -->
+    <div class="hp hp-prod" id="p2">
+      <div class="pp-name orange-accent-txt">ORANGE<br>COOKIES</div>
+      <div class="pp-info">
+        <div class="hpptag oa">Limoneno + Terpineol</div>
+        <div class="hppef">Creativo.<br>Energizante.</div>
+        <div class="hppterp">Limoneno + Terpineol</div><br>
+        <a href="#tridente" class="hppbtn ob">Ver producto →</a>
+      </div>
+    </div>
+
+    <!-- PANEL: Lemon -->
+    <div class="hp hp-prod" id="p3">
+      <div class="pp-name lemon-accent-txt">LEMON</div>
+      <div class="pp-info">
+        <div class="hpptag la">Limoneno + Terpinoleno + Beta-cariofileno</div>
+        <div class="hppef">Relax.<br>Foco.<br>Antiinflamatorio.</div>
+        <div class="hppterp">Terpinoleno + Beta-cariofileno</div><br>
+        <a href="#tridente" class="hppbtn lb">Ver producto →</a>
+      </div>
+    </div>
+
+    <!-- Dots -->
+    <div class="hdots">
+      <div class="dot on"  id="d0"></div>
+      <div class="dot dc"  id="d1"></div>
+      <div class="dot do"  id="d2"></div>
+      <div class="dot dl"  id="d3"></div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="shint" id="shint"><span>Scroll</span><div class="sline"></div></div>
+
+  </div>
+</div>
+
+<!-- EL TRIDENTE -->
+<section class="tridente" id="tridente">
+  <div style="text-align:center;margin-bottom:60px">
+    <div class="stag">Colección Completa</div>
+    <h2 class="sh2">El Tridente<em>Cada mate una nueva experiencia.</em></h2>
+  </div>
+  <div class="pgrid" id="pgrid">
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);font-size:14px">Cargando productos...</div>
+  </div>
+</section>
+
+<!-- EFECTO SÉQUITO -->
+<section class="split" id="sequito">
+  <div class="split-text">
+    <div class="stag">La Ciencia Detrás de Terpy</div>
+    <h2 class="sh2" style="font-size:clamp(32px,4vw,52px)">El Efecto<br>Séquito</h2>
+    <p class="split-it">No es magia. Es sinergia.<br>Cuando la cafeína natural y los terpenos trabajan juntos, ocurre algo que ninguna yerba mate tradicional puede replicar, logrando una nueva experiencia sensorial.</p>
+    <ul class="split-ul">
+      <li>El sabor no se lava, dura toda la cebada.</li>
+      <li>Terpenos de grado alimenticio certificados con RNPA.</li>
+      <li>Cada blend tiene una función específica.</li>
+    </ul>
+  </div>
+  <div class="split-vis"><img src="hero-lemon.png" alt="Efecto Séquito" onerror="this.style.background='#1a1400'"/></div>
+</section>
+
+<!-- ¿QUÉ ES TERPY? -->
+<section class="feats" id="porque">
+  <div class="stag">El mate está cambiando.</div>
+  <h2 class="sh2">¿Por qué Terpy?<em>Porque nos gustan las cosas distintas.</em></h2>
+  <div class="fgrid">
+    <div class="fc"><div class="fnum">01</div><div class="fic">⚗️</div><h3>Diferencial tecnológico</h3><p>Terpenos integrados a escala nanométrica. Logrando un sabor estable y equilibrado.</p></div>
+    <div class="fc"><div class="fnum">02</div><div class="fic">🌊</div><h3>Basta de mate lavado.</h3><p>El sabor dura toda la cebada. Usamos una yerba premium de molienda despalada. Muchos mates, misma yerba.</p></div>
+    <div class="fc"><div class="fnum">03</div><div class="fic">🌿</div><h3>100% Natural.</h3><p>Sin aditivos artificiales. Nuestros insumos son terpenos botánicos de origen natural.</p></div>
+    <div class="fc"><div class="fnum">04</div><div class="fic">🇦🇷</div><h3>Innovación</h3><p>Primera yerba funcional aromatizada con terpenos. Hecha en Argentina.</p></div>
+  </div>
+</section>
+
+<!-- NUESTROS BLENDS -->
+<section class="terps" id="terpenos">
+  <div class="stag">Bioactivos</div>
+  <h2 class="sh2">Los Beneficios de<br>Nuestros Terpenos<em>Moléculas que cambian el juego</em></h2>
+  <div class="tgrid">
+    <div class="tc"><div class="tblob"></div><div class="tname">Mirceno</div><div class="tprod">↳ Mango</div><p class="tdesc">Terpeno terroso del lúpulo y el mango. Tropical, dulce y afrutado. Propiedades sedantes y relajantes musculares que potencian la calma sin perder el foco.</p><div class="tef">🟣 Relax · Enfoque</div></div>
+    <div class="tc"><div class="tblob"></div><div class="tname">Terpineol</div><div class="tprod">↳ Orange Cookies</div><p class="tdesc">Terpeno cítrico y dulce. Pino y naranja con un fondo dulce y cremoso. Reduce la ansiedad y crea el estado mental perfecto para la creatividad y la conexión social.</p><div class="tef">🟠 Creativo · Energizante</div></div>
+    <div class="tc"><div class="tblob"></div><div class="tname">Limoneno</div><div class="tprod">↳ Lemon + Mango</div><p class="tdesc">Terpeno cítrico que potencia la concentración. Limón fresco con un fondo dulce y herbal. Amplifica los efectos de la cafeína sin el crash posterior.</p><div class="tef">🟡 Boost cognitivo · Concentración · Enfoque</div></div>
+  </div>
+</section>
+
+<!-- RESEÑAS -->
+<section class="resenas" id="resenas">
+  <div class="stag">Lo que dicen los miembros del Séquito</div>
+  <h2 class="sh2">Reseñas<em>Quienes ya lo probaron.</em></h2>
+  <div class="rgrid">
+    <div class="rc"><div class="rstars">★★★★★</div><p class="rtxt">"Nunca pensé que una yerba me iba a cambiar la rutina de trabajo. El Lemon es otro nivel de concentración."</p><div class="rautor"><div class="rav" style="color:var(--gold)">MG</div><div><div class="rnombre">Martín G.</div><div class="rloc">Buenos Aires</div></div></div></div>
+    <div class="rc"><div class="rstars">★★★★★</div><p class="rtxt">"Orange Cookies ideal para terminar la jornada laboral e ir a casa relax. Increíble."</p><div class="rautor"><div class="rav" style="color:var(--orange)">SF</div><div><div class="rnombre">Sofía F.</div><div class="rloc">Rosario</div></div></div></div>
+    <div class="rc"><div class="rstars">★★★★★</div><p class="rtxt">"No soy un genio haciendo el mate, pero con esta yerba no se me lava. Llevaba años buscando una yerba saborizada que no se lavara. La encontré."</p><div class="rautor"><div class="rav" style="color:var(--violet)">LP</div><div><div class="rnombre">Lucas P.</div><div class="rloc">Córdoba</div></div></div></div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="nl-sec" style="opacity:1;transform:none">
+  <div><h2>Unite al Séquito</h2><p>Novedades, lanzamientos y recetas. Sin spam.</p></div>
+  <div class="nlform">
+    <input type="email" class="nlinput" id="nlemail" placeholder="tu@email.com"/>
+    <button class="nlbtn" onclick="subNL()">Suscribirme</button>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" style="opacity:1;transform:none">
+  <div><h2>Pedí tu<br><span>Tridente</span></h2><p>Los 3 sabores. Envíos gratis a todo el país.</p></div>
+  <div class="ctabtns">
+    <a href="#tridente" class="bprim">Comprar Ahora</a>
+    <a href="#terpenos" class="bsec">Conocer más</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ftop">
+    <div class="fbrand"><h3>Terpy</h3><p>La primera yerba mate ultra-premium funcional de Argentina. Terpenos botánicos, nanoemulsión, Efecto Séquito.</p></div>
+    <div class="fcol"><h4>Productos</h4><ul><li><a href="#">Mango</a></li><li><a href="#">Lemon</a></li><li><a href="#">Orange Cookies</a></li><li><a href="#">Kit Tridente</a></li></ul></div>
+    <div class="fcol"><h4>Marca</h4><ul><li><a href="#">Nuestra Historia</a></li><li><a href="#">Tecnología</a></li><li><a href="#">Terpenos</a></li></ul></div>
+    <div class="fcol"><h4>Soporte</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Envíos</a></li><li><a href="#">Contacto</a></li><li><a href="#">Distribuidores</a></li></ul></div>
+  </div>
+  <div class="fbot">
+    <p>© 2026 Terpy · Hecho en Argentina</p>
+    <div class="fsoc">
+      <a href="https://instagram.com/terpy" target="_blank">ig</a>
+      <a href="https://tiktok.com/@terpy" target="_blank">tt</a>
+      <a href="https://wa.me/5491100000000" target="_blank">wa</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const TN_URL = 'https://yerku.mitiendanube.com/productos/bombillon-pico-de-loro-cincelada-no-se-tapa-yerba-uruguaya-despalada-lenteja/';
+let cart=[], user=null, authMode='login', prods=[];
+let sid=localStorage.getItem('tsid')||Math.random().toString(36).slice(2);
+localStorage.setItem('tsid',sid);
+
+// ─── CURSOR + GOTITAS ───
+const cur=document.getElementById('cur');
+let mx=0,my=0;
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  cur.classList.remove('h');
+  if(e.target.closest('a,button,.pcard'))cur.classList.add('h');
+});
+
+// ─── SCROLL REVEAL ───
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:0.1});
+document.querySelectorAll('section').forEach(s=>ro.observe(s));
+
+// ─── TOAST ───
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000);}
+
+// ─── AUTH ───
+function openAuth(e){
+  e&&e.preventDefault();
+  if(user){
+    toggleAccountDD();
+    return;
+  }
+  document.getElementById('auth-modal').classList.add('on');
+}
+function toggleAccountDD(){
+  let dd=document.getElementById('account-dd');
+  if(dd){dd.remove();return;}
+  const btn=document.getElementById('btn-auth');
+  const r=btn.getBoundingClientRect();
+  dd=document.createElement('div');
+  dd.id='account-dd';
+  dd.style.cssText=`position:fixed;top:${r.bottom+8}px;right:${window.innerWidth-r.right}px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);padding:20px;min-width:220px;z-index:9999;border:1px solid rgba(0,0,0,.08)`;
+  dd.innerHTML=`<div style="font-size:12px;color:#888;margin-bottom:4px">Sesión iniciada como</div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:16px;word-break:break-all">${user.email}</div>
+    <button id="signout-btn" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #e8e8e8;background:white;font-size:13px;font-weight:700;cursor:pointer">Cerrar sesión</button>`;
+  document.body.appendChild(dd);
+  dd.querySelector('#signout-btn').addEventListener('click',()=>{dd.remove();_sb.auth.signOut();});
+}
+function closeAuth(){document.getElementById('auth-modal').classList.remove('on');}
+function toggleMode(e){
+  e&&e.preventDefault();
+  authMode=authMode==='login'?'register':'login';
+  const r=authMode==='register';
+  document.getElementById('mtitle').textContent=r?'Crear cuenta':'Bienvenido';
+  document.getElementById('msub').textContent=r?'Unite al Séquito gratis.':'Ingresá para ver tus pedidos.';
+  document.getElementById('mbtn').textContent=r?'Crear cuenta':'Ingresar';
+  document.getElementById('mswtxt').textContent=r?'¿Ya tenés cuenta?':'¿No tenés cuenta?';
+  document.getElementById('mswlnk').textContent=r?' Ingresá':' Registrate';
+  document.getElementById('mnamew').style.display=r?'block':'none';
+}
+async function submitAuth(){
+  const email=document.getElementById('memail').value.trim();
+  const pass=document.getElementById('mpass').value;
+  const name=document.getElementById('mname').value.trim();
+  const err=document.getElementById('merr');const ok=document.getElementById('mok');
+  err.textContent='';ok.textContent='';
+  if(!email||!pass){err.textContent='Completá email y contraseña.';return;}
+  try{
+    if(authMode==='register'){
+      const{error}=await _sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+      if(error)throw error;
+      ok.textContent='¡Cuenta creada! Revisá tu email.';
+    }else{
+      const{error}=await _sb.auth.signInWithPassword({email,password:pass});
+      if(error)throw error;
+      closeAuth();toast('¡Bienvenido al Séquito! 🌿','ok');
+    }
+  }catch(e){err.textContent=e.message.includes('Invalid')?'Email o contraseña incorrectos.':e.message;}
+}
+_sb.auth.onAuthStateChange(async(ev,session)=>{
+  user=session?.user||null;
+  document.getElementById('authlbl').textContent=user?'Mi cuenta':'Ingresar';
+  if(user)await loadCartDB();
+});
+
+// ─── PRODUCTOS ───
+async function loadProducts(){
+  const{data,error}=await _sb.from('products').select('*').eq('active',true).order('created_at');
+  if(error||!data?.length)return;
+  prods=data;
+  document.getElementById('pgrid').innerHTML=data.map(p=>`
+    <div class="pcard" data-id="${p.id}">
+      <div class="pvis" style="background:linear-gradient(135deg,#0a0a0a,#161616)">
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div style="font-family:'Fraunces',serif;font-weight:900;font-size:28px;color:${p.color_accent}">Terpy</div>
+          <div style="font-size:10px;font-weight:800;letter-spacing:.15em;color:${p.color_accent};text-transform:uppercase">${p.name}</div>
+          <div style="font-family:'Fraunces',serif;font-style:italic;font-size:11px;color:rgba(255,255,255,.4)">${p.terpeno}</div>
+        </div>
+        <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:110px;height:110px;border-radius:50%;background:${p.color_accent};filter:blur(36px);opacity:.28"></div>
+        <span class="pbadge" style="background:${p.color_accent}22;color:${p.color_accent};border:1px solid ${p.color_accent}55">${p.stock>0?p.stock+' disp.':'Sin stock'}</span>
+      </div>
+      <div class="pbody">
+        <div class="pname">${p.name}</div>
+        <div class="pterp">Terpeno: ${p.terpeno}</div>
+        <div class="pef">${p.efecto}</div>
+        <div class="pfoot">
+          <div class="pprice">$${Number(p.price).toLocaleString('es-AR')}</div>
+          <button class="padd" onclick="addCart('${p.id}','${p.name}',${p.price},'${p.color_accent}')" ${p.stock===0?'disabled':''}>
+            ${p.stock===0?'Sin stock':'+ Agregar'}
+          </button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ─── CART ───
+function toggleCart(e){e&&e.preventDefault();document.getElementById('cdrawer').classList.toggle('on');document.getElementById('cov').classList.toggle('on');}
+async function addCart(id,name,price,color){
+  const ex=cart.find(i=>i.id===id);
+  if(ex)ex.qty++;else cart.push({id,name,price,color,qty:1});
+
+  // Animación: partícula vuela del botón al carrito
+  const btn=document.querySelector(`[data-id="${id}"] .padd`);
+  const cartBtn=document.querySelector('.cart-btn')||document.querySelector('[onclick*="toggleCart"]');
+  if(btn){
+    btn.classList.add('loading');
+    btn.textContent='🧉 Agregando...';
+    const bRect=btn.getBoundingClientRect();
+    const fly=document.createElement('div');
+    fly.className='fly-mate';
+    fly.textContent='🧉';
+    fly.style.cssText=`left:${bRect.left+bRect.width/2-14}px;top:${bRect.top+bRect.height/2-14}px`;
+    document.body.appendChild(fly);
+    const dest=cartBtn?cartBtn.getBoundingClientRect():{left:window.innerWidth-60,top:20,width:40,height:40};
+    const dx=dest.left+dest.width/2-14-(bRect.left+bRect.width/2-14);
+    const dy=dest.top+dest.height/2-14-(bRect.top+bRect.height/2-14);
+    fly.animate([
+      {transform:'translate(0,0) scale(1) rotate(0deg)',opacity:1},
+      {transform:`translate(${dx/2}px,${dy/2-40}px) scale(1.3) rotate(-20deg)`,opacity:1,offset:.5},
+      {transform:`translate(${dx}px,${dy}px) scale(0.2) rotate(15deg)`,opacity:0}
+    ],{duration:600,easing:'cubic-bezier(.4,0,.2,1)'}).onfinish=()=>fly.remove();
+    const card=document.querySelector(`[data-id="${id}"]`);
+    if(card){card.classList.add('pop');card.addEventListener('animationend',()=>card.classList.remove('pop'),{once:true});}
+    setTimeout(()=>{
+      btn.classList.remove('loading');
+      btn.textContent='✓ Agregado';
+      btn.style.background='#2a7a2a';
+      setTimeout(()=>{btn.textContent='+ Agregar';btn.style.background='';},1200);
+    },600);
+  }
+
+  renderCart();toast(name+' agregado 🌿','ok');
+  if(user)await _sb.from('cart_items').upsert({user_id:user.id,product_id:id,quantity:ex?ex.qty:1},{onConflict:'user_id,product_id'});
+}
+async function rmCart(id){cart=cart.filter(i=>i.id!==id);renderCart();if(user)await _sb.from('cart_items').delete().eq('user_id',user.id).eq('product_id',id);}
+async function chQty(id,d){const it=cart.find(i=>i.id===id);if(!it)return;it.qty+=d;if(it.qty<=0){rmCart(id);return;}renderCart();if(user)await _sb.from('cart_items').upsert({user_id:user.id,product_id:id,quantity:it.qty},{onConflict:'user_id,product_id'});}
+async function loadCartDB(){if(!user)return;const{data}=await _sb.from('cart_items').select('*,products(*)').eq('user_id',user.id);if(!data)return;cart=data.map(i=>({id:i.product_id,name:i.products?.name,price:i.products?.price,color:i.products?.color_accent,qty:i.quantity}));renderCart();}
+function renderCart(){
+  const t=cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('ccnt').textContent=t;
+  const list=document.getElementById('clist'),foot=document.getElementById('cfoot');
+  if(!cart.length){list.innerHTML='<div class="cemp"><div style="font-size:48px">🧉</div><p>Tu carrito está vacío.<br>Agregá tu primer Terpy.</p></div>';foot.style.display='none';return;}
+  foot.style.display='block';
+  const amt=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  document.getElementById('ctotal').textContent='$'+Number(amt).toLocaleString('es-AR');
+  list.innerHTML=cart.map(i=>`<div class="ci"><div class="cith" style="box-shadow:0 0 20px ${i.color}44"><span style="color:${i.color}">T</span></div><div class="ciin"><div class="cin">${i.name}</div><div class="cip">$${Number(i.price).toLocaleString('es-AR')} c/u</div><div class="ciq"><button class="qb" onclick="chQty('${i.id}',-1)">−</button><span class="qn">${i.qty}</span><button class="qb" onclick="chQty('${i.id}',1)">+</button></div></div><button class="crm" onclick="rmCart('${i.id}')">✕</button></div>`).join('');
+}
+async function checkout(){
+  if(!user){toggleCart();setTimeout(()=>openAuth(),350);return;}
+  if(!cart.length)return;
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const{data:order,error}=await _sb.from('orders').insert({user_id:user.id,email:user.email,status:'pending',total,shipping_address:{}}).select().single();
+  if(error){toast('Error al crear la orden','err');return;}
+  await _sb.from('order_items').insert(cart.map(i=>({order_id:order.id,product_id:i.id,quantity:i.qty,unit_price:i.price})));
+  await _sb.from('cart_items').delete().eq('user_id',user.id);
+  cart=[];renderCart();toggleCart();toast('¡Orden creada! Te contactamos pronto 🌿','ok');
+}
+
+// ─── NEWSLETTER ───
+async function subNL(){
+  const email=document.getElementById('nlemail').value.trim();
+  if(!email||!email.includes('@')){toast('Ingresá un email válido','err');return;}
+  const{error}=await _sb.from('newsletter').insert({email,source:'website'});
+  if(error?.code==='23505'){toast('¡Ya estás suscripto! 🌿');return;}
+  if(error){toast('Error','err');return;}
+  document.getElementById('nlemail').value='';
+  toast('¡Bienvenido al Séquito! 🌿','ok');
+}
+
+// Nav: transparente sobre hero, sage al salir
+const navEl=document.getElementById('main-nav');
+new IntersectionObserver(([e])=>{
+  e.isIntersecting?navEl.classList.add('tp'):navEl.classList.remove('tp');
+},{threshold:0}).observe(document.getElementById('hp'));
+// Secuencia:
+// 0%–15%   → Solo paquetes (bg0), sin texto
+// 15%–30%  → "Una yerba distinta" aparece
+// 30%–40%  → Fade out intro
+// 40%–57%  → Mango
+// 55%–72%  → Orange Cookies
+// 70%–88%  → Lemon
+// 88%–100% → fade out
+
+const hpEl=document.getElementById('hp');
+const hintEl=document.getElementById('shint');
+const panels=[document.getElementById('p0'),document.getElementById('p1'),document.getElementById('p2'),document.getElementById('p3')];
+const bgs=[document.getElementById('bg0'),document.getElementById('bg1'),document.getElementById('bg2'),document.getElementById('bg3')];
+const dots=[document.getElementById('d0'),document.getElementById('d1'),document.getElementById('d2'),document.getElementById('d3')];
+
+// init
+bgs[0].style.opacity='1';
+bgs.slice(1).forEach(b=>b.style.opacity='0');
+panels.forEach(p=>{p.style.opacity='0';p.style.transform='translateY(-50%)';p.style.pointerEvents='none';});
+
+function cl(v,a,b){return Math.min(Math.max(v,a),b);}
+function mp(v,a,b,c,d){return c+(d-c)*cl((v-a)/(b-a),0,1);}
+const dimmer=document.getElementById('bg-dimmer');
+function sp(el,op,ty){if(el.classList.contains('hp-prod')){el.style.opacity=op;el.style.pointerEvents=op>0.3?'all':'none';}else{el.style.opacity=op;el.style.transform=`translate(-50%,calc(-50% + ${ty}px))`;el.style.pointerEvents=op>0.3?'all':'none';}}
+function sp0(el,op,ty){el.style.opacity=op;el.style.transform=`translate(-50%,calc(-60% + ${ty}px))`;el.style.pointerEvents=op>0.3?'all':'none';}
+function setDot(i){dots.forEach((d,j)=>{d.classList.toggle('on',j===i);});}
+
+let raf=false;
+function tick(){
+  const top=hpEl.getBoundingClientRect().top;
+  const total=hpEl.offsetHeight-window.innerHeight;
+  const p=cl(-top/total,0,1);
+
+  // Nav siempre transparente sobre el hero
+  navEl.classList.add('tp');
+
+  // Hint
+  hintEl.style.opacity=mp(p,0,0.05,1,0);
+
+  // BG 0: visible 0–0.14, fade out 0.14–0.28
+  bgs[0].style.opacity=p<0.14?'1':String(mp(p,0.14,0.28,1,0));
+
+  // Dimmer: oscurece paquetes cuando aparece el texto intro (0.22–0.46)
+  const dimOp=p<0.22?0:p<0.30?mp(p,0.22,0.30,0,0.55):p<0.38?0.55:mp(p,0.38,0.46,0.55,0);
+  dimmer.style.background=`rgba(0,0,0,${dimOp})`;
+
+  // BG 1 mango: in 0.30–0.38, visible, out 0.60–0.68
+  bgs[1].style.opacity=String(p<0.30?0:p<0.38?mp(p,0.30,0.38,0,1):p<0.60?1:p<0.68?mp(p,0.60,0.68,1,0):0);
+  // BG 2 orange: in 0.55–0.62, visible, out 0.76–0.84
+  bgs[2].style.opacity=String(p<0.55?0:p<0.62?mp(p,0.55,0.62,0,1):p<0.76?1:p<0.84?mp(p,0.76,0.84,1,0):0);
+  // BG 3 lemon: in 0.74–0.80, stays to end
+  bgs[3].style.opacity=String(p<0.74?0:mp(p,0.74,0.80,0,1));
+
+  // Dot
+  const ad=p<0.30?0:p<0.55?1:p<0.74?2:3;
+  setDot(ad);
+
+  // Panel 0 "distinta": centrado, in 0.22–0.30, out 0.38–0.46
+  const p0op=p<0.22?0:p<0.30?mp(p,0.22,0.30,0,1):p<0.38?1:mp(p,0.38,0.46,1,0);
+  const p0ty=p<0.22?30:p<0.30?mp(p,0.22,0.30,30,0):p<0.38?0:mp(p,0.38,0.46,0,-40);
+  sp0(panels[0],p0op,p0ty);
+  // Panel 1 mango: in 0.38–0.44, out 0.58–0.65
+  const m0=p<0.38?0:p<0.44?mp(p,0.38,0.44,0,1):p<0.58?1:p<0.65?mp(p,0.58,0.65,1,0):0;
+  const m1=p<0.38?40:p<0.44?mp(p,0.38,0.44,40,0):p<0.58?0:mp(p,0.58,0.65,0,-40);
+  sp(panels[1],m0,m1);
+  // Panel 2 orange: in 0.62–0.68, out 0.76–0.83
+  const o0=p<0.62?0:p<0.68?mp(p,0.62,0.68,0,1):p<0.76?1:p<0.83?mp(p,0.76,0.83,1,0):0;
+  const o1=p<0.62?40:p<0.68?mp(p,0.62,0.68,40,0):p<0.76?0:mp(p,0.76,0.83,0,-40);
+  sp(panels[2],o0,o1);
+  // Panel 3 lemon: in 0.80–0.86, out 0.95–1.0
+  const l0=p<0.80?0:p<0.86?mp(p,0.80,0.86,0,1):p<0.95?1:mp(p,0.95,1.0,1,0);
+  const l1=p<0.80?40:p<0.86?mp(p,0.80,0.86,40,0):0;
+  sp(panels[3],l0,l1);
+}
+
+window.addEventListener('scroll',()=>{if(!raf){raf=true;requestAnimationFrame(()=>{tick();raf=false;});}},{passive:true});
+
+// ─── MERCADOPAGO ───
+const MP_PUBLIC_KEY = 'APP_USR-74ba770e-0a88-4998-ae86-624ccba50ddf';
+let mpInstance, bricksBuilder, envioData = null;
+
+// ─── CHECKOUT ───
+function openCheckout() {
+  if (!cart.length) return;
+  // Si no está logueado igual puede comprar como invitado
+  document.getElementById('chk-bg').classList.add('on');
+  if (user) {
+    document.getElementById('chk-email').value = user.email || '';
+  }
+  renderSummary();
+}
+
+function closeCheckout() {
+  document.getElementById('chk-bg').classList.remove('on');
+}
+
+// Click fuera cierra
+document.getElementById('chk-bg').addEventListener('click', e => {
+  if (e.target === document.getElementById('chk-bg')) closeCheckout();
+});
+
+function renderSummary() {
+  const items = cart.map(i => `
+    <div class="chk-srow">
+      <span>${i.name} × ${i.qty}</span>
+      <span>$${Number(i.price * i.qty).toLocaleString('es-AR')}</span>
+    </div>`).join('');
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const envio = envioData ? envioData.precio : 0;
+  const total = subtotal + envio;
+  document.getElementById('chk-summary').innerHTML = `
+    ${items}
+    <div class="chk-srow" style="color:var(--muted);font-size:13px">
+      <span>Envío</span>
+      <span>${envio > 0 ? '$'+Number(envio).toLocaleString('es-AR') : 'A calcular'}</span>
+    </div>
+    <div class="chk-srow total">
+      <span>Total</span>
+      <span>$${Number(total).toLocaleString('es-AR')}</span>
+    </div>`;
+}
+
+// ─── CALCULAR ENVÍO (tabla de zonas por CP) ───
+// TODO: MODO TEST — precios en $1, revertir antes de producción
+function getZonaEnvio(cp) {
+  const n = parseInt(cp);
+  if ((n >= 1000 && n <= 1999) || (n >= 1600 && n <= 1999)) return { zona:'Zona 1', precio:1, dias:'2-3' };
+  if ((n >= 2000 && n <= 3999) || (n >= 5000 && n <= 5999) || (n >= 6000 && n <= 6999)) return { zona:'Zona 2', precio:1, dias:'3-5' };
+  if ((n >= 4000 && n <= 4999) || (n >= 5400 && n <= 5599) || (n >= 7000 && n <= 7999)) return { zona:'Zona 3', precio:1, dias:'5-7' };
+  if (n >= 8000 && n <= 9999) return { zona:'Zona 4', precio:1, dias:'7-10' };
+  return { zona:'Zona 3', precio:1, dias:'5-7' };
+}
+
+async function calcEnvio() {
+  const cp = document.getElementById('chk-cp').value.trim();
+  const errEl = document.getElementById('chk-envio-err');
+  const resEl = document.getElementById('chk-envio-result');
+  errEl.style.display = 'none';
+  if (!cp || cp.length < 4) {
+    errEl.textContent = 'Ingresá un código postal válido.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const zona = getZonaEnvio(cp);
+  envioData = { precio: zona.precio, nombre: `Correo Argentino — ${zona.zona}`, dias: zona.dias };
+  document.getElementById('envio-nombre').textContent = `Correo Argentino — ${zona.zona}`;
+  document.getElementById('envio-dias').textContent = `${zona.dias} días hábiles`;
+  document.getElementById('envio-precio').textContent = '$' + Number(zona.precio).toLocaleString('es-AR');
+  resEl.style.display = 'block';
+  renderSummary();
+}
+
+// ─── PAGAR CON MP CHECKOUT PRO ───
+async function pagarConMP() {
+  const nombre   = document.getElementById('chk-nombre').value.trim();
+  const apellido = document.getElementById('chk-apellido').value.trim();
+  const email    = document.getElementById('chk-email').value.trim();
+  const tel      = document.getElementById('chk-tel').value.trim();
+  const dir      = document.getElementById('chk-dir').value.trim();
+  const cp       = document.getElementById('chk-cp').value.trim();
+  const errEl    = document.getElementById('chk-pago-err');
+  errEl.style.display = 'none';
+
+  if (!nombre || !email) {
+    errEl.textContent = 'Completá nombre y email para continuar.';
+    errEl.style.display = 'block'; return;
+  }
+  if (!envioData) {
+    errEl.textContent = 'Calculá el envío antes de continuar.';
+    errEl.style.display = 'block';
+    document.getElementById('chk-cp').focus();
+    return;
+  }
+  if (!dir) {
+    errEl.textContent = 'Ingresá tu dirección de entrega.';
+    errEl.style.display = 'block'; return;
+  }
+
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const envio    = envioData?.precio || 0;
+  const total    = subtotal + envio;
+
+  try {
+    // Guardar orden en Supabase
+    const { data: order, error } = await _sb.from('orders').insert({
+      user_id: user?.id || null,
+      email, status: 'pending', total,
+      shipping_address: { nombre, apellido, email, tel, dir, cp },
+    }).select().single();
+    if (error) throw error;
+
+    await _sb.from('order_items').insert(
+      cart.map(i => ({ order_id: order.id, product_id: i.id, quantity: i.qty, unit_price: i.price }))
+    );
+
+    // Crear preferencia via Edge Function
+    const res = await fetch('https://uzbhkggccvsbsriapfsa.supabase.co/functions/v1/mp-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6YmhrZ2djY3ZzYnNyaWFwZnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTM2MjQsImV4cCI6MjA4OTY4OTYyNH0.FCBF7M59FTcV5r0wP__QB_aX-PgJC0gPMT1HqYrOmUs`,
+      },
+      body: JSON.stringify({
+        order_id: order.id,
+        order: { nombre, apellido, email, tel, dir, cp, envio, items: cart }
+      })
+    });
+
+    const mpData = await res.json();
+    if (mpData.error) throw new Error(mpData.error);
+
+    // Redirigir a MP (Checkout Pro producción)
+    window.location.href = mpData.init_point;
+
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+// ─── PROCESAR PAGO via Edge Function ───
+async function onMPSubmit(formData) {
+  const nombre   = document.getElementById('chk-nombre').value.trim();
+  const apellido = document.getElementById('chk-apellido').value.trim();
+  const email    = document.getElementById('chk-email').value.trim();
+  const tel      = document.getElementById('chk-tel').value.trim();
+  const dir      = document.getElementById('chk-dir').value.trim();
+  const cp       = document.getElementById('chk-cp').value.trim();
+  const errEl    = document.getElementById('chk-pago-err');
+  errEl.style.display = 'none';
+
+  if (!nombre || !email) {
+    errEl.textContent = 'Completá nombre y email para continuar.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const envio    = envioData?.precio || 0;
+  const total    = subtotal + envio;
+
+  try {
+    // 1. Guardar orden en Supabase
+    const { data: order, error } = await _sb.from('orders').insert({
+      user_id: user?.id || null,
+      email, status: 'pending', total,
+      shipping_address: { nombre, apellido, email, tel, dir, cp },
+      payment_method: formData?.payment_type_id || 'card',
+    }).select().single();
+    if (error) throw error;
+
+    await _sb.from('order_items').insert(
+      cart.map(i => ({ order_id: order.id, product_id: i.id, quantity: i.qty, unit_price: i.price }))
+    );
+
+    // 2. Crear preferencia en MP via Edge Function
+    const res = await fetch('https://uzbhkggccvsbsriapfsa.supabase.co/functions/v1/mp-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6YmhrZ2djY3ZzYnNyaWFwZnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTM2MjQsImV4cCI6MjA4OTY4OTYyNH0.FCBF7M59FTcV5r0wP__QB_aX-PgJC0gPMT1HqYrOmUs`,
+      },
+      body: JSON.stringify({
+        formData,
+        order: { nombre, apellido, email, tel, dir, cp, envio, items: cart }
+      })
+    });
+
+    const mpData = await res.json();
+    if (mpData.error) throw new Error(mpData.error);
+
+    // 3. Redirigir a MP Checkout Pro producción
+    window.location.href = mpData.init_point;
+
+  } catch(e) {
+    errEl.textContent = 'Error al procesar el pedido: ' + e.message;
+    errEl.style.display = 'block';
+    console.error(e);
+  }
+}
+// ─── TRANSFERENCIA ───
+function toggleTransferencia() {
+  const div = document.getElementById('transferencia-datos');
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0) + (envioData?.precio || 0);
+  document.getElementById('transferencia-total').textContent = '$' + Number(total).toLocaleString('es-AR');
+  div.style.display = div.style.display === 'none' ? 'block' : 'none';
+}
+
+async function confirmarTransferencia() {
+  const nombre   = document.getElementById('chk-nombre').value.trim();
+  const apellido = document.getElementById('chk-apellido').value.trim();
+  const email    = document.getElementById('chk-email').value.trim();
+  const tel      = document.getElementById('chk-tel').value.trim();
+  const dir      = document.getElementById('chk-dir').value.trim();
+  const cp       = document.getElementById('chk-cp').value.trim();
+  const errEl    = document.getElementById('chk-pago-err');
+  errEl.style.display = 'none';
+
+  if (!nombre || !email) { errEl.textContent = 'Completá nombre y email.'; errEl.style.display='block'; return; }
+  if (!envioData) { errEl.textContent = 'Calculá el envío primero.'; errEl.style.display='block'; return; }
+
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0) + envioData.precio;
+
+  try {
+    const { data: order, error } = await _sb.from('orders').insert({
+      user_id: user?.id || null,
+      email, status: 'pending_transfer', total,
+      shipping_address: { nombre, apellido, email, tel, dir, cp },
+    }).select().single();
+    if (error) throw error;
+
+    await _sb.from('order_items').insert(
+      cart.map(i => ({ order_id: order.id, product_id: i.id, quantity: i.qty, unit_price: i.price }))
+    );
+
+    cart = []; renderCart(); closeCheckout();
+    toast('¡Pedido registrado! Envianos el comprobante por WhatsApp 🌿', 'ok');
+    setTimeout(() => {
+      window.open(`https://wa.me/5491159130538?text=Hola%20Terpy!%20Acabo%20de%20realizar%20una%20transferencia%20por%20$${Number(total).toLocaleString('es-AR')}%20para%20el%20pedido%20de%20${nombre}%20${apellido}.%20Adjunto%20el%20comprobante.`, '_blank');
+    }, 1000);
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+// ─── CONFIRMACIÓN POST-PAGO (redirect de MercadoPago) ───
+function cerrarConfirmacion() {
+  document.getElementById('confirm-bg').style.display = 'none';
+  // Limpia los params de la URL sin recargar
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+async function checkMPRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status') || params.get('collection_status');
+  const orderId = params.get('external_reference');
+  const paymentId = params.get('payment_id') || params.get('collection_id');
+  if (!status || !orderId) return;
+
+  const bg    = document.getElementById('confirm-bg');
+  const icon  = document.getElementById('confirm-icon');
+  const title = document.getElementById('confirm-title');
+  const sub   = document.getElementById('confirm-sub');
+  const orderBox = document.getElementById('confirm-order');
+  const orderNum = document.getElementById('confirm-order-num');
+  const btn   = document.getElementById('confirm-btn');
+
+  // Mostrar número de orden abreviado
+  orderBox.style.display = 'block';
+  orderNum.textContent = '#' + orderId.slice(0, 8).toUpperCase();
+
+  // Obtener nombre del comprador
+  let nombreComprador = '';
+  const { data: orderData } = await _sb.from('orders').select('shipping_address, total, email').eq('id', orderId).single();
+  if (orderData?.shipping_address?.nombre) {
+    nombreComprador = orderData.shipping_address.nombre;
+  }
+
+  if (status === 'approved') {
+    icon.textContent  = '✅';
+    title.textContent = nombreComprador ? `¡Gracias, ${nombreComprador}!` : '¡Pago confirmado!';
+    sub.textContent   = 'Tu pedido fue recibido y lo estamos preparando. Te contactamos pronto para coordinar el envío.';
+    btn.textContent   = 'Volver a la tienda';
+    btn.style.background = '#1a1a1a';
+    btn.style.color      = 'white';
+    // Actualizar estado de la orden en Supabase
+    await _sb.from('orders').update({ status: 'paid', payment_ref: paymentId }).eq('id', orderId);
+
+    // Enviar emails de confirmación
+    if (orderData) {
+      const addr = orderData.shipping_address || {};
+      const { data: itemsData } = await _sb.from('order_items')
+        .select('quantity, unit_price, products(name)')
+        .eq('order_id', orderId);
+      const items = (itemsData || []).map((i: any) => ({
+        name: i.products?.name || 'Producto',
+        qty: i.quantity,
+        price: i.unit_price,
+      }));
+      fetch('https://uzbhkggccvsbsriapfsa.supabase.co/functions/v1/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6YmhrZ2djY3ZzYnNyaWFwZnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMTM2MjQsImV4cCI6MjA4OTY4OTYyNH0.FCBF7M59FTcV5r0wP__QB_aX-PgJC0gPMT1HqYrOmUs`,
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          nombre: addr.nombre || '',
+          apellido: addr.apellido || '',
+          email: addr.email || orderData.email,
+          items,
+          total: orderData.total,
+          envio: addr.envio || 0,
+          dir: addr.dir || '',
+          cp: addr.cp || '',
+        }),
+      });
+    }
+  } else if (status === 'pending' || status === 'in_process') {
+    icon.textContent  = '⏳';
+    title.textContent = 'Pago pendiente';
+    sub.textContent   = 'Tu pago está siendo procesado. En cuanto se acredite, preparamos tu pedido. Revisá tu email para más información.';
+    btn.textContent   = 'Entendido';
+    btn.style.background = '#f5a623';
+    btn.style.color      = 'white';
+  } else {
+    icon.textContent  = '❌';
+    title.textContent = 'Pago rechazado';
+    sub.textContent   = 'No se pudo procesar el pago. Podés intentarlo de nuevo con otro medio de pago.';
+    orderBox.style.display = 'none';
+    btn.textContent   = 'Intentar de nuevo';
+    btn.style.background = '#e24b4a';
+    btn.style.color      = 'white';
+    btn.onclick = () => { cerrarConfirmacion(); openCheckout(); };
+  }
+
+  bg.style.display = 'flex';
+  // Limpiar carrito si el pago fue exitoso
+  if (status === 'approved') {
+    cart = [];
+    renderCart();
+  }
+}
+
+(async()=>{
+  tick();
+  await loadProducts();
+  const{data:{session}}=await _sb.auth.getSession();
+  user=session?.user||null;
+  if(user){document.getElementById('authlbl').textContent='Mi cuenta';await loadCartDB();}
+  await checkMPRedirect();
+})();
+</script>
+</body>
+</html>
